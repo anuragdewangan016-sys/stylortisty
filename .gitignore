@@ -1,3 +1,2 @@
 qr_code.png
-media/*
-!media/.gitkeep
+media/*.heic
