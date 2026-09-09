@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Gallery</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f0f0f;
+            color: #fff;
+            min-height: 100vh;
+        }
+        header {
+            text-align: center;
+            padding: 40px 20px 20px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+        }
+        header h1 { font-size: 2rem; margin-bottom: 8px; }
+        header p { color: #aaa; font-size: 0.95rem; }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: #1a1a2e;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .card:hover { transform: scale(1.03); }
+        .card img, .card video {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+        .card .info {
+            padding: 12px 16px;
+        }
+        .card .info h3 { font-size: 1rem; margin-bottom: 4px; }
+        .card .info p { color: #888; font-size: 0.85rem; }
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox img, .lightbox video {
+            max-width: 90vw;
+            max-height: 80vh;
+            border-radius: 8px;
+        }
+        .lightbox .close {
+            position: absolute;
+            top: 20px; right: 30px;
+            font-size: 2rem;
+            color: #fff;
+            cursor: pointer;
+            z-index: 1001;
+        }
+        .empty-msg {
+            text-align: center;
+            padding: 80px 20px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+        .empty-msg h2 { font-size: 1.5rem; margin-bottom: 10px; color: #888; }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 16px 20px;
+        }
+        .tabs button {
+            padding: 8px 20px;
+            border: 1px solid #333;
+            background: transparent;
+            color: #ccc;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .tabs button.active, .tabs button:hover {
+            background: #16213e;
+            color: #fff;
+            border-color: #4a6fa5;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>My Media Gallery</h1>
+    <p>Scan the QR code to view photos & videos from anywhere</p>
+</header>
+
+<div class="tabs">
+    <button class="active" onclick="filterMedia('all')">All</button>
+    <button onclick="filterMedia('photo')">Photos</button>
+    <button onclick="filterMedia('video')">Videos</button>
+</div>
+
+<div class="gallery" id="gallery">
+    <div class="empty-msg">
+        <h2>Your gallery is empty</h2>
+        <p>Add your photos and videos to the <code>media/</code> folder and update the items in <code>index.html</code>.</p>
+    </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <span class="close">&times;</span>
+    <div id="lightbox-content"></div>
+</div>
+
+<script>
+    // ============================================================
+    // ADD YOUR PHOTOS AND VIDEOS HERE
+    // ============================================================
+    // For photos:  { type: "photo", src: "media/your-photo.jpg", title: "Beach Trip", date: "2024" }
+    // For videos:  { type: "video", src: "media/your-video.mp4", title: "Birthday Party", date: "2024" }
+    // ============================================================
+
+    const mediaItems = [
+        // --- PHOTOS (uncomment and add your files) ---
+        // { type: "photo", src: "media/photo1.jpg", title: "Photo Title 1", date: "2024" },
+        // { type: "photo", src: "media/photo2.png", title: "Photo Title 2", date: "2024" },
+        // { type: "photo", src: "media/photo3.jpg", title: "Photo Title 3", date: "2024" },
+
+        // --- VIDEOS (uncomment and add your files) ---
+        // { type: "video", src: "media/video1.mp4", title: "Video Title 1", date: "2024" },
+        // { type: "video", src: "media/video2.mp4", title: "Video Title 2", date: "2024" },
+    ];
+
+    let currentFilter = 'all';
+
+    function renderGallery() {
+        const gallery = document.getElementById('gallery');
+        const filtered = currentFilter === 'all'
+            ? mediaItems
+            : mediaItems.filter(item => item.type === currentFilter);
+
+        if (filtered.length === 0) {
+            gallery.innerHTML = `
+                <div class="empty-msg">
+                    <h2>Your gallery is empty</h2>
+                    <p>Add your photos and videos to the <code>media/</code> folder<br>and update the items in <code>index.html</code>.</p>
+                </div>`;
+            return;
+        }
+
+        gallery.innerHTML = filtered.map((item, index) => {
+            if (item.type === 'video') {
+                return `
+                    <div class="card" onclick="openLightbox(${mediaItems.indexOf(item)})">
+                        <video src="${item.src}" muted preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>
+                        <div class="info">
+                            <h3>${item.title}</h3>
+                            <p>${item.date} &bull; Video</p>
+                        </div>
+                    </div>`;
+            }
+            return `
+                <div class="card" onclick="openLightbox(${mediaItems.indexOf(item)})">
+                    <img src="${item.src}" alt="${item.title}" loading="lazy">
+                    <div class="info">
+                        <h3>${item.title}</h3>
+                        <p>${item.date} &bull; Photo</p>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    function filterMedia(type) {
+        currentFilter = type;
+        document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        renderGallery();
+    }
+
+    function openLightbox(index) {
+        const item = mediaItems[index];
+        const content = document.getElementById('lightbox-content');
+        const lightbox = document.getElementById('lightbox');
+
+        if (item.type === 'video') {
+            content.innerHTML = `<video src="${item.src}" controls autoplay style="max-width:90vw;max-height:80vh;border-radius:8px;"></video>`;
+        } else {
+            content.innerHTML = `<img src="${item.src}" alt="${item.title}" style="max-width:90vw;max-height:80vh;border-radius:8px;">`;
+        }
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        const lightbox = document.getElementById('lightbox');
+        const content = document.getElementById('lightbox-content');
+        lightbox.classList.remove('active');
+        content.innerHTML = '';
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeLightbox();
+    });
+
+    renderGallery();
+</script>
+
+</body>
+</html>
