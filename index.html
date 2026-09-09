@@ -284,9 +284,7 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0);
-            -webkit-backdrop-filter: blur(0px);
-            backdrop-filter: blur(0px);
+            background: rgba(250, 250, 252, 0.98);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -294,42 +292,29 @@
             display: flex;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.4s ease,
-                        visibility 0s linear 0.4s,
-                        background-color 0.4s ease,
-                        -webkit-backdrop-filter 0.4s ease,
-                        backdrop-filter 0.4s ease;
+            transition: opacity 0.3s ease, visibility 0s linear 0.3s;
         }
 
         .lightbox.active { visibility: visible; transition-delay: 0s; }
 
-        .lightbox.active.show {
-            opacity: 1;
-            background: rgba(255, 255, 255, 0.92);
-            -webkit-backdrop-filter: blur(18px);
-            backdrop-filter: blur(18px);
-        }
+        .lightbox.active.show { opacity: 1; }
 
         .lightbox img, .lightbox video {
-            border-radius: 8px;
-            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
+            border-radius: 6px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.10);
         }
 
         .lightbox .lb-media {
             max-width: 90vw;
             max-height: 82vh;
             opacity: 0;
-            transform: scale(0.8) translateY(40px);
-            filter: blur(8px);
-            transition: opacity 0.45s ease,
-                        transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
-                        filter 0.45s ease;
+            transform: scale(0.985);
+            transition: opacity 0.45s ease, transform 0.55s ease;
         }
 
         .lightbox.active.show .lb-media {
             opacity: 1;
-            transform: scale(1) translateY(0);
-            filter: blur(0);
+            transform: scale(1);
         }
 
         .lightbox img, .lightbox video {
@@ -529,7 +514,7 @@
         setTimeout(() => {
             lightbox.classList.remove('active');
             content.innerHTML = '';
-        }, 400);
+        }, 500);
         document.body.style.overflow = '';
     }
 
