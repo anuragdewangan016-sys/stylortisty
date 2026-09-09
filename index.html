@@ -284,7 +284,9 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.97);
+            background: rgba(255, 255, 255, 0);
+            -webkit-backdrop-filter: blur(0px);
+            backdrop-filter: blur(0px);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -292,35 +294,42 @@
             display: flex;
             opacity: 0;
             visibility: hidden;
-            transform: scale(0.6);
-            transition: opacity 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
-                        transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
-                        visibility 0.4s;
+            transition: opacity 0.4s ease,
+                        visibility 0s linear 0.4s,
+                        background-color 0.4s ease,
+                        -webkit-backdrop-filter 0.4s ease,
+                        backdrop-filter 0.4s ease;
         }
 
-        .lightbox.active { visibility: visible; }
+        .lightbox.active { visibility: visible; transition-delay: 0s; }
 
         .lightbox.active.show {
             opacity: 1;
-            transform: scale(1);
+            background: rgba(255, 255, 255, 0.92);
+            -webkit-backdrop-filter: blur(18px);
+            backdrop-filter: blur(18px);
         }
 
         .lightbox img, .lightbox video {
             border-radius: 8px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.16);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
         }
 
         .lightbox .lb-media {
             max-width: 90vw;
             max-height: 82vh;
             opacity: 0;
-            transform: scale(0.94);
-            transition: opacity 0.35s ease, transform 0.35s ease;
+            transform: scale(0.8) translateY(40px);
+            filter: blur(8px);
+            transition: opacity 0.45s ease,
+                        transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+                        filter 0.45s ease;
         }
 
         .lightbox.active.show .lb-media {
             opacity: 1;
-            transform: scale(1);
+            transform: scale(1) translateY(0);
+            filter: blur(0);
         }
 
         .lightbox img, .lightbox video {
@@ -466,7 +475,7 @@
             const dir = index % 2 === 0 ? 'from-left' : 'from-right';
             if (item.type === 'video') {
                 return `
-                    <div class="card ${dir}" onclick="openLightbox(${mediaItems.indexOf(item)}, this)" style="animation-delay:${index * 0.07}s">
+                    <div class="card ${dir}" onclick="openLightbox(${mediaItems.indexOf(item)})" style="animation-delay:${index * 0.07}s">
                         <video src="${item.src}" muted preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>
                         <div class="info">
                             <h3>${item.title}</h3>
@@ -475,7 +484,7 @@
                     </div>`;
             }
             return `
-                <div class="card ${dir}" onclick="openLightbox(${mediaItems.indexOf(item)}, this)" style="animation-delay:${index * 0.07}s">
+                <div class="card ${dir}" onclick="openLightbox(${mediaItems.indexOf(item)})" style="animation-delay:${index * 0.07}s">
                     <img src="${item.src}" alt="${item.title}" loading="lazy">
                     <div class="info">
                         <h3>${item.title}</h3>
@@ -493,21 +502,10 @@
         renderGallery();
     }
 
-    function openLightbox(index, cardEl) {
+    function openLightbox(index) {
         const item = mediaItems[index];
         const content = document.getElementById('lightbox-content');
         const lightbox = document.getElementById('lightbox');
-
-        if (cardEl) {
-            const rect = cardEl.getBoundingClientRect();
-            const vw = window.innerWidth;
-            const vh = window.innerHeight;
-            const cx = (rect.left + rect.width / 2) - vw / 2;
-            const cy = (rect.top + rect.height / 2) - vh / 2;
-            const originX = (cx / (vw / 2)) * 50 + 50;
-            const originY = (cy / (vh / 2)) * 50 + 50;
-            lightbox.style.transformOrigin = `${originX}% ${originY}%`;
-        }
 
         if (item.type === 'video') {
             content.innerHTML = `<video class="lb-media" src="${item.src}" controls autoplay></video>`;
@@ -530,7 +528,6 @@
         lightbox.classList.remove('show');
         setTimeout(() => {
             lightbox.classList.remove('active');
-            lightbox.style.transformOrigin = '';
             content.innerHTML = '';
         }, 400);
         document.body.style.overflow = '';
