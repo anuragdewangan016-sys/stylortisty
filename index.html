@@ -26,6 +26,18 @@
             pointer-events: none;
         }
 
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                radial-gradient(rgba(80, 110, 160, 0.10) 1px, transparent 1px),
+                radial-gradient(rgba(220, 120, 150, 0.08) 1px, transparent 1px);
+            background-size: 24px 24px, 24px 24px;
+            background-position: 0 0, 12px 12px;
+        }
+
         .bg-deco .blob {
             position: absolute;
             border-radius: 50%;
@@ -190,30 +202,49 @@
             overflow: hidden;
             cursor: pointer;
             opacity: 0;
-            transform: translateY(40px) scale(0.96);
             transition: box-shadow 0.35s ease, transform 0.35s ease;
+            will-change: transform, opacity;
         }
 
         .card.revealed {
-            opacity: 1;
-            transform: translateY(0) scale(1);
             animation: fadeUp 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
         }
 
+        .card.from-left.revealed { animation-name: slideInLeft; }
+
+        .card.from-right.revealed { animation-name: slideInRight; }
+
         @keyframes fadeUp {
-            0%   { opacity: 0; transform: translateY(40px) scale(0.96); }
+            0%   { opacity: 0; transform: translateY(40px) scale(0.97); }
             60%  { opacity: 1; transform: translateY(-6px) scale(1.01); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
+        @keyframes slideInLeft {
+            0%   { opacity: 0; transform: translateX(-60px) rotate(-1.5deg); }
+            60%  { opacity: 1; transform: translateX(8px) rotate(0.5deg); }
+            100% { opacity: 1; transform: translateX(0) rotate(0); }
+        }
+
+        @keyframes slideInRight {
+            0%   { opacity: 0; transform: translateX(60px) rotate(1.5deg); }
+            60%  { opacity: 1; transform: translateX(-8px) rotate(-0.5deg); }
+            100% { opacity: 1; transform: translateX(0) rotate(0); }
+        }
+
         .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.07);
+            transform: translateY(-5px) scale(1.015);
+            box-shadow: 0 16px 40px rgba(80, 110, 160, 0.14);
         }
 
         .card img, .card video {
             width: 100%;
             display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover img, .card:hover video {
+            transform: scale(1.04);
         }
 
         .card .info {
@@ -235,7 +266,6 @@
         }
 
         .lightbox {
-            display: none;
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
@@ -244,19 +274,38 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-        }
-
-        .lightbox.active { display: flex; }
-
-        .lightbox.active #lightbox-content img,
-        .lightbox.active #lightbox-content video {
+            display: flex;
             opacity: 0;
-            transform: scale(0.92);
-            animation: lightboxIn 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+            visibility: hidden;
+            transform: scale(0.6);
+            transition: opacity 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+                        transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+                        visibility 0.4s;
         }
 
-        @keyframes lightboxIn {
-            to { opacity: 1; transform: scale(1); }
+        .lightbox.active { visibility: visible; }
+
+        .lightbox.active.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .lightbox img, .lightbox video {
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.16);
+        }
+
+        .lightbox .lb-media {
+            max-width: 90vw;
+            max-height: 82vh;
+            opacity: 0;
+            transform: scale(0.94);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+        }
+
+        .lightbox.active.show .lb-media {
+            opacity: 1;
+            transform: scale(1);
         }
 
         .lightbox img, .lightbox video {
@@ -329,6 +378,7 @@
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
 </div>
+<div class="bg-pattern"></div>
 
 <div class="content">
     <header>
@@ -398,9 +448,10 @@
         }
 
         gallery.innerHTML = filtered.map((item, index) => {
+            const dir = index % 2 === 0 ? 'from-left' : 'from-right';
             if (item.type === 'video') {
                 return `
-                    <div class="card" onclick="openLightbox(${mediaItems.indexOf(item)})" style="animation-delay:${index * 0.07}s">
+                    <div class="card ${dir}" onclick="openLightbox(${mediaItems.indexOf(item)}, this)" style="animation-delay:${index * 0.07}s">
                         <video src="${item.src}" muted preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>
                         <div class="info">
                             <h3>${item.title}</h3>
@@ -409,7 +460,7 @@
                     </div>`;
             }
             return `
-                <div class="card" onclick="openLightbox(${mediaItems.indexOf(item)})" style="animation-delay:${index * 0.07}s">
+                <div class="card ${dir}" onclick="openLightbox(${mediaItems.indexOf(item)}, this)" style="animation-delay:${index * 0.07}s">
                     <img src="${item.src}" alt="${item.title}" loading="lazy">
                     <div class="info">
                         <h3>${item.title}</h3>
@@ -427,25 +478,46 @@
         renderGallery();
     }
 
-    function openLightbox(index) {
+    function openLightbox(index, cardEl) {
         const item = mediaItems[index];
         const content = document.getElementById('lightbox-content');
         const lightbox = document.getElementById('lightbox');
 
-        if (item.type === 'video') {
-            content.innerHTML = `<video src="${item.src}" controls autoplay style="max-width:90vw;max-height:82vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.18);"></video>`;
-        } else {
-            content.innerHTML = `<img src="${item.src}" alt="${item.title}" style="max-width:90vw;max-height:82vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.18);">`;
+        if (cardEl) {
+            const rect = cardEl.getBoundingClientRect();
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const cx = (rect.left + rect.width / 2) - vw / 2;
+            const cy = (rect.top + rect.height / 2) - vh / 2;
+            const originX = (cx / (vw / 2)) * 50 + 50;
+            const originY = (cy / (vh / 2)) * 50 + 50;
+            lightbox.style.transformOrigin = `${originX}% ${originY}%`;
         }
+
+        if (item.type === 'video') {
+            content.innerHTML = `<video class="lb-media" src="${item.src}" controls autoplay></video>`;
+        } else {
+            content.innerHTML = `<img class="lb-media" src="${item.src}" alt="${item.title}">`;
+        }
+
         lightbox.classList.add('active');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                lightbox.classList.add('show');
+            });
+        });
         document.body.style.overflow = 'hidden';
     }
 
     function closeLightbox() {
         const lightbox = document.getElementById('lightbox');
         const content = document.getElementById('lightbox-content');
-        lightbox.classList.remove('active');
-        content.innerHTML = '';
+        lightbox.classList.remove('show');
+        setTimeout(() => {
+            lightbox.classList.remove('active');
+            lightbox.style.transformOrigin = '';
+            content.innerHTML = '';
+        }, 400);
         document.body.style.overflow = '';
     }
 
