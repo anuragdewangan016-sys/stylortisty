@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>my works</title>
+    <title>MY PHOTOS</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -42,21 +42,115 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: gradientShift 6s ease infinite;
-            letter-spacing: -2px;
-            text-shadow: none;
+            letter-spacing: 6px;
+            text-transform: uppercase;
             position: relative;
+            display: inline-block;
         }
+
+        header h1 .char {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(60px) rotateX(-90deg);
+            animation: charReveal 0.6s forwards;
+        }
+
+        @keyframes charReveal {
+            0% { opacity: 0; transform: translateY(60px) rotateX(-90deg); }
+            60% { opacity: 1; transform: translateY(-8px) rotateX(10deg); }
+            100% { opacity: 1; transform: translateY(0) rotateX(0); }
+        }
+
+        header h1 .char.space { width: 0.3em; }
 
         header h1::after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: -16px;
             left: 50%;
             transform: translateX(-50%);
-            width: 60px;
+            width: 0;
             height: 3px;
-            background: linear-gradient(90deg, #f093fb, #4facfe);
+            background: linear-gradient(90deg, #f093fb, #f5576c, #4facfe);
             border-radius: 2px;
+            animation: lineGrow 0.8s 1.5s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes lineGrow {
+            to { width: 120px; }
+        }
+
+        .subtitle {
+            margin-top: 30px;
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #555;
+            opacity: 0;
+            animation: fadeIn 1s 1.8s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        header .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: orbPulse 4s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        header .glow-orb:nth-child(1) {
+            width: 200px; height: 200px;
+            background: #f093fb;
+            top: 10%; left: 15%;
+            animation-delay: 0s;
+        }
+
+        header .glow-orb:nth-child(2) {
+            width: 160px; height: 160px;
+            background: #4facfe;
+            top: 20%; right: 20%;
+            animation-delay: 2s;
+        }
+
+        @keyframes orbPulse {
+            0% { opacity: 0.15; transform: scale(1); }
+            100% { opacity: 0.35; transform: scale(1.2); }
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 20px;
+            opacity: 0;
+            animation: fadeIn 1s 2s forwards;
+        }
+
+        .divider span {
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(135deg, #f093fb, #4facfe);
+            border-radius: 50%;
+            animation: dotPulse 2s infinite;
+        }
+
+        .divider span:nth-child(2) { animation-delay: 0.3s; }
+        .divider span:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes dotPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
         }
 
         @keyframes gradientShift {
@@ -303,8 +397,17 @@
 
 <div class="content">
     <header>
-        <h1>my works</h1>
+        <div class="glow-orb"></div>
+        <div class="glow-orb"></div>
+        <h1 id="animated-title">MY PHOTOS</h1>
+        <p class="subtitle">a collection of moments</p>
     </header>
+
+    <div class="divider">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
 
     <div class="tabs">
         <button class="active" onclick="filterMedia('all', this)">All</button>
@@ -322,7 +425,7 @@
     </div>
 
     <footer>
-        Made with <span>&hearts;</span> &mdash; my works
+        Made with <span>&hearts;</span> &mdash; MY PHOTOS
     </footer>
 </div>
 
@@ -435,7 +538,21 @@
         currentFilter = type;
         document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        renderGallery();
+    function animateTitle() {
+        const el = document.getElementById('animated-title');
+        const text = el.textContent;
+        el.innerHTML = '';
+        [...text].forEach((char, i) => {
+            const span = document.createElement('span');
+            span.className = char === ' ' ? 'char space' : 'char';
+            span.textContent = char === ' ' ? '' : char;
+            span.style.animationDelay = `${i * 0.08}s`;
+            el.appendChild(span);
+        });
+    }
+    animateTitle();
+
+    renderGallery();
     }
 
     function openLightbox(index) {
