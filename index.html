@@ -4,207 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MY PHOTOS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Cinzel:wght@400;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Jost', sans-serif;
-            background: #050510;
-            color: #fff;
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-weight: 400;
+            background: #fafafa;
+            color: #1a1a1a;
             min-height: 100vh;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
-
-        canvas#bg-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .content { position: relative; z-index: 1; }
 
         header {
             text-align: center;
-            padding: 100px 20px 60px;
+            padding: 110px 20px 50px;
             position: relative;
         }
 
         header h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(3.5rem, 10vw, 7rem);
-            font-weight: 600;
-            background: linear-gradient(135deg, #f093fb, #f5576c, #4facfe, #00f2fe);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 6s ease infinite;
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 300;
             letter-spacing: 8px;
             text-transform: uppercase;
+            color: #111;
             position: relative;
             display: inline-block;
-            font-style: italic;
         }
 
         header h1 .char {
             display: inline-block;
             opacity: 0;
-            transform: translateY(60px) rotateX(-90deg);
-            animation: charReveal 0.6s forwards;
+            transform: translateY(26px);
+            animation: charIn 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
         }
 
-        @keyframes charReveal {
-            0% { opacity: 0; transform: translateY(60px) rotateX(-90deg); }
-            60% { opacity: 1; transform: translateY(-8px) rotateX(10deg); }
-            100% { opacity: 1; transform: translateY(0) rotateX(0); }
+        @keyframes charIn {
+            from { opacity: 0; transform: translateY(26px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
-        header h1 .char.space { width: 0.3em; }
-
-        header h1::after {
-            content: '';
-            position: absolute;
-            bottom: -16px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #f093fb, #f5576c, #4facfe);
-            border-radius: 2px;
-            animation: lineGrow 0.8s 1.5s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes lineGrow {
-            to { width: 120px; }
-        }
+        header h1 .char.space { width: 0.28em; }
 
         .subtitle {
-            margin-top: 30px;
-            font-family: 'Cinzel', serif;
-            font-size: 1rem;
-            letter-spacing: 6px;
+            margin-top: 26px;
+            font-size: 0.72rem;
+            font-weight: 400;
+            letter-spacing: 5px;
             text-transform: uppercase;
-            color: #777;
-            opacity: 0;
-            animation: fadeIn 1s 1.8s forwards;
+            color: #999;
         }
 
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        header .glow-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.3;
-            animation: orbPulse 4s ease-in-out infinite alternate;
-            pointer-events: none;
-        }
-
-        header .glow-orb:nth-child(1) {
-            width: 200px; height: 200px;
-            background: #f093fb;
-            top: 10%; left: 15%;
-            animation-delay: 0s;
-        }
-
-        header .glow-orb:nth-child(2) {
-            width: 160px; height: 160px;
-            background: #4facfe;
-            top: 20%; right: 20%;
-            animation-delay: 2s;
-        }
-
-        @keyframes orbPulse {
-            0% { opacity: 0.15; transform: scale(1); }
-            100% { opacity: 0.35; transform: scale(1.2); }
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            padding: 20px;
-            opacity: 0;
-            animation: fadeIn 1s 2s forwards;
-        }
-
-        .divider span {
-            width: 4px;
-            height: 4px;
-            background: linear-gradient(135deg, #f093fb, #4facfe);
-            border-radius: 50%;
-            animation: dotPulse 2s infinite;
-        }
-
-        .divider span:nth-child(2) { animation-delay: 0.3s; }
-        .divider span:nth-child(3) { animation-delay: 0.6s; }
-
-        @keyframes dotPulse {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.5); }
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+        .rule {
+            width: 34px;
+            height: 1px;
+            background: #d4d4d4;
+            margin: 40px auto 0;
         }
 
         .tabs {
             display: flex;
             justify-content: center;
-            gap: 12px;
-            padding: 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(20px);
-            background: rgba(5, 5, 16, 0.6);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            gap: 6px;
+            padding: 26px 20px 0;
         }
 
         .tabs button {
-            padding: 10px 28px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.03);
-            color: #999;
-            border-radius: 30px;
+            padding: 8px 22px;
+            border: none;
+            background: transparent;
+            color: #aaa;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
             font-weight: 500;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-bottom: 2px solid transparent;
+            transition: color 0.25s ease, border-color 0.25s ease;
         }
 
-        .tabs button:hover {
-            color: #fff;
-            border-color: rgba(240, 147, 251, 0.4);
-            background: rgba(240, 147, 251, 0.08);
-        }
+        .tabs button:hover { color: #555; }
 
         .tabs button.active {
-            color: #fff;
-            background: linear-gradient(135deg, rgba(240,147,251,0.2), rgba(79,172,254,0.2));
-            border-color: rgba(240,147,251,0.5);
-            box-shadow: 0 0 20px rgba(240,147,251,0.15);
+            color: #111;
+            border-bottom-color: #111;
+        }
+
+        .counter {
+            text-align: center;
+            padding: 18px 20px 6px;
+            color: #bbb;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
         .gallery {
             columns: 3;
-            column-gap: 16px;
-            padding: 40px 24px;
-            max-width: 1400px;
+            column-gap: 18px;
+            padding: 34px 28px 20px;
+            max-width: 1280px;
             margin: 0 auto;
         }
 
@@ -213,94 +116,53 @@
 
         .card {
             break-inside: avoid;
-            margin-bottom: 16px;
-            border-radius: 16px;
+            margin-bottom: 18px;
+            background: #fff;
+            border: 1px solid #ececec;
+            border-radius: 10px;
             overflow: hidden;
-            position: relative;
             cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
             opacity: 0;
-            transform: translateY(60px) scale(0.95);
+            transform: translateY(28px);
+            transition: box-shadow 0.35s ease, transform 0.35s ease;
         }
 
         .card.revealed {
             opacity: 1;
-            transform: translateY(0) scale(1);
-            animation: fadeUp 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transform: translateY(0);
+            animation: fadeUp 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
         }
 
         @keyframes fadeUp {
-            0% { opacity: 0; transform: translateY(60px) scale(0.95); }
-            60% { opacity: 1; transform: translateY(-6px) scale(1.01); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 16px;
-            padding: 1px;
-            background: linear-gradient(135deg, rgba(240,147,251,0.3), rgba(79,172,254,0.3));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.4s;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .card:hover::before { opacity: 1; }
 
         .card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow:
-                0 20px 40px rgba(0,0,0,0.4),
-                0 0 40px rgba(240,147,251,0.1),
-                0 0 80px rgba(79,172,254,0.05);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.07);
         }
 
         .card img, .card video {
             width: 100%;
             display: block;
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .card:hover img, .card:hover video {
-            transform: scale(1.05);
         }
 
         .card .info {
-            padding: 16px 20px;
-            position: relative;
-        }
-
-        .card .info::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 20px; right: 20px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(240,147,251,0.3), transparent);
+            padding: 14px 18px 16px;
         }
 
         .card .info h3 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.3rem;
-            font-weight: 600;
-            font-style: italic;
-            margin-bottom: 4px;
-            color: #eee;
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: #222;
+            margin-bottom: 3px;
         }
 
         .card .info p {
-            font-family: 'Jost', sans-serif;
-            color: #666;
-            font-size: 0.8rem;
-            letter-spacing: 1.5px;
+            font-size: 0.72rem;
+            color: #aaa;
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
 
@@ -309,8 +171,7 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(5, 5, 16, 0.95);
-            backdrop-filter: blur(30px);
+            background: rgba(255, 255, 255, 0.97);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -321,99 +182,77 @@
 
         .lightbox img, .lightbox video {
             max-width: 90vw;
-            max-height: 80vh;
-            border-radius: 12px;
-            box-shadow: 0 0 60px rgba(240,147,251,0.15);
+            max-height: 82vh;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
         }
 
         .lightbox .close {
             position: absolute;
-            top: 24px; right: 32px;
-            font-size: 2.5rem;
-            color: #666;
+            top: 20px; right: 30px;
+            font-size: 1.6rem;
+            font-weight: 300;
+            color: #555;
             cursor: pointer;
             z-index: 1001;
-            transition: all 0.3s;
-            width: 50px;
-            height: 50px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
+            transition: background 0.25s ease;
         }
 
         .lightbox .close:hover {
-            color: #fff;
-            background: rgba(255,255,255,0.1);
+            background: #f0f0f0;
+            color: #000;
         }
 
         .empty-msg {
             text-align: center;
-            padding: 120px 20px;
-            color: #444;
+            padding: 100px 20px;
+            color: #bbb;
             grid-column: 1 / -1;
         }
 
         .empty-msg h2 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.5rem;
-            font-style: italic;
-            margin-bottom: 12px;
-            color: #555;
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: #999;
+            margin-bottom: 10px;
         }
 
-        .empty-msg p { color: #333; line-height: 1.6; }
+        .empty-msg p { font-size: 0.85rem; line-height: 1.8; }
 
         .empty-msg code {
-            background: rgba(255,255,255,0.05);
+            background: #f2f2f2;
             padding: 2px 8px;
             border-radius: 4px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         footer {
             text-align: center;
-            padding: 40px 20px 60px;
-            color: #333;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
+            padding: 60px 20px 70px;
+            color: #ccc;
+            font-size: 0.7rem;
+            letter-spacing: 3px;
             text-transform: uppercase;
         }
 
-        footer span {
-            background: linear-gradient(135deg, #f093fb, #4facfe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 500;
-        }
-
-        .counter {
-            text-align: center;
-            padding: 10px;
-            color: #444;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-        }
+        footer span { color: #111; font-weight: 500; }
     </style>
 </head>
 <body>
 
-<canvas id="bg-canvas"></canvas>
-
 <div class="content">
     <header>
-        <div class="glow-orb"></div>
-        <div class="glow-orb"></div>
         <h1 id="animated-title">MY PHOTOS</h1>
         <p class="subtitle">a collection of moments</p>
     </header>
 
-    <div class="divider">
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
+    <div class="rule"></div>
 
     <div class="tabs">
         <button class="active" onclick="filterMedia('all', this)">All</button>
@@ -426,7 +265,7 @@
     <div class="gallery" id="gallery">
         <div class="empty-msg">
             <h2>Your gallery is empty</h2>
-            <p>Add your photos and videos to the <code>media/</code> folder and update the items in <code>index.html</code>.</p>
+            <p>Add your photos and videos to the <code>media/</code> folder<br>and update the items in <code>index.html</code>.</p>
         </div>
     </div>
 
@@ -441,53 +280,6 @@
 </div>
 
 <script>
-    const canvas = document.getElementById('bg-canvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    let w, h;
-
-    function resize() {
-        w = canvas.width = window.innerWidth;
-        h = canvas.height = window.innerHeight * 3;
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    class Particle {
-        constructor() {
-            this.reset();
-        }
-        reset() {
-            this.x = Math.random() * w;
-            this.y = Math.random() * h;
-            this.size = Math.random() * 2 + 0.5;
-            this.speedX = (Math.random() - 0.5) * 0.3;
-            this.speedY = (Math.random() - 0.5) * 0.3;
-            this.opacity = Math.random() * 0.5 + 0.1;
-            this.hue = Math.random() > 0.5 ? 280 : 200;
-        }
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-            if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
-        }
-        draw() {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = `hsla(${this.hue}, 80%, 70%, ${this.opacity})`;
-            ctx.fill();
-        }
-    }
-
-    for (let i = 0; i < 80; i++) particles.push(new Particle());
-
-    function animateParticles() {
-        ctx.clearRect(0, 0, w, h);
-        particles.forEach(p => { p.update(); p.draw(); });
-        requestAnimationFrame(animateParticles);
-    }
-    animateParticles();
-
     const mediaItems = [
         { type: "photo", src: "media/photo1.jpg", title: "Photo 1", date: "Aug 2026" },
         { type: "photo", src: "media/photo2.jpg", title: "Photo 2", date: "Aug 2026" },
@@ -507,7 +299,9 @@
             ? mediaItems
             : mediaItems.filter(item => item.type === currentFilter);
 
-        counter.textContent = filtered.length > 0 ? `${filtered.length} ${currentFilter === 'all' ? 'items' : currentFilter + 's'}` : '';
+        counter.textContent = filtered.length > 0
+            ? `${filtered.length} ${currentFilter === 'all' ? 'items' : currentFilter + 's'}`
+            : '';
 
         if (filtered.length === 0) {
             gallery.innerHTML = `
@@ -521,7 +315,7 @@
         gallery.innerHTML = filtered.map((item, index) => {
             if (item.type === 'video') {
                 return `
-                    <div class="card" onclick="openLightbox(${mediaItems.indexOf(item)})" style="animation-delay:${index * 0.05}s">
+                    <div class="card" onclick="openLightbox(${mediaItems.indexOf(item)})" style="animation-delay:${index * 0.07}s">
                         <video src="${item.src}" muted preload="metadata" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>
                         <div class="info">
                             <h3>${item.title}</h3>
@@ -530,7 +324,7 @@
                     </div>`;
             }
             return `
-                <div class="card" onclick="openLightbox(${mediaItems.indexOf(item)})" style="animation-delay:${index * 0.05}s">
+                <div class="card" onclick="openLightbox(${mediaItems.indexOf(item)})" style="animation-delay:${index * 0.07}s">
                     <img src="${item.src}" alt="${item.title}" loading="lazy">
                     <div class="info">
                         <h3>${item.title}</h3>
@@ -554,9 +348,9 @@
         const lightbox = document.getElementById('lightbox');
 
         if (item.type === 'video') {
-            content.innerHTML = `<video src="${item.src}" controls autoplay style="max-width:90vw;max-height:80vh;border-radius:12px;box-shadow:0 0 60px rgba(240,147,251,0.15);"></video>`;
+            content.innerHTML = `<video src="${item.src}" controls autoplay style="max-width:90vw;max-height:82vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.18);"></video>`;
         } else {
-            content.innerHTML = `<img src="${item.src}" alt="${item.title}" style="max-width:90vw;max-height:80vh;border-radius:12px;box-shadow:0 0 60px rgba(240,147,251,0.15);">`;
+            content.innerHTML = `<img src="${item.src}" alt="${item.title}" style="max-width:90vw;max-height:82vh;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,0.18);">`;
         }
         lightbox.classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -581,14 +375,12 @@
         [...text].forEach((char, i) => {
             const span = document.createElement('span');
             span.className = char === ' ' ? 'char space' : 'char';
-            span.textContent = char === ' ' ? '' : char;
-            span.style.animationDelay = `${i * 0.08}s`;
+            span.textContent = char === ' ' ? '\u00A0' : char;
+            span.style.animationDelay = `${i * 0.07}s`;
             el.appendChild(span);
         });
     }
     animateTitle();
-
-    const revealables = document.querySelectorAll('.card');
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -606,7 +398,6 @@
     }
 
     renderGallery();
-    observeCards();
 </script>
 
 </body>
